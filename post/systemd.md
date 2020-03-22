@@ -1,0 +1,112 @@
+---
+author: "Tommy"
+date: 2020-03-22
+title: "Systemd"
+tags: [
+    "linux",
+    "development",
+]
+categories: [
+    "Development",
+    "Linux"
+]
+---
+
+
+## 导言
+
+守护进程就是一直在后台运行的进程。
+
+
+## Systemd
+
+Systemd 是linux系统工具，用来启动守护进程的。
+
+systemctl 是Systemd的主命令，用于管理系统。
+
+systemd-analyze 命令用于查看启动耗时
+
+hostnamectl 命令用于查看当前主机的信息
+
+localectl 命令用于查看本地化设置
+
+timedatectl 命令用于查看当前时区设置
+
+loginctl 命令用于查看当前登录的用户
+
+journalctl 查看所有内核和应用的日志
+
+### 配置
+
+#系统服务，开机不需要登录就能运行的程序（可以用于开机自启）
+
+/usr/lib/systemd/system  
+
+#用户服务，需要登录后才能运行程序
+
+/usr/lib/systemd/user    
+
+服务脚本一般以xxx.service命名, 三部分[Unit] [Service] [Install]
+
+### 案例
+假设我有个一下web程序需要加入自启动
+```
+[Unit]
+Description=demo
+After=network.target
+Before=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/demo
+ExecReload=/bin/kill -s HUP $MAINPID
+TimeoutSec=0
+Restart=always
+StartLimitBurst=3
+StartLimitInterval=120s
+
+[Install]
+wantedBy=multi-user.target
+```
+### Unit 单元
+
+Description: 当前服务描述
+
+After: 在服务前启动
+
+Before: 在服务后启动
+
+...
+
+### Service
+
+Type: 启动类型
+
+ExecStart: 启动命令
+
+ExecReload: 重启命令
+
+TimeoutSec: 超时命令
+
+Restart: 启动设置
+
+StartLimitBurst: 限制启动频率
+
+StartLimitInterval:  与上面一起限制启动频率
+
+### Install
+wantedBy 加入那个target
+
+
+
+## 引用
+
+> [@Systemd 入门教程：命令篇](
+http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html)
+
+> [@Linux 守护进程的启动方法](http://www.ruanyifeng.com/blog/2016/02/linux-daemon.html)
+
+
+> [@systemd.service 中文手册](http://www.jinbuguo.com/systemd/systemd.service.html)
+
+> [@CentOS7编写systemd服务脚本](https://blog.csdn.net/yuanfangPOET/article/details/89410312?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task)
